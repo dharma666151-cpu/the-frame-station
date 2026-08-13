@@ -1,0 +1,56 @@
+THE FRAME STATION — OWNER LOGIN SETUP
+
+This version adds:
+- /admin owner login
+- /admin/dashboard.html owner dashboard
+- Product add/edit/delete/hide
+- Product price/category/featured controls
+- Homepage hero text
+- WhatsApp number
+- D1 database
+- Optional R2 image uploads
+
+IMPORTANT:
+This is no longer a purely static drag-and-drop website. The admin system uses Cloudflare Pages Functions.
+Cloudflare officially supports Pages Functions for authentication and full-stack behavior, and D1/R2 can be bound to Pages Functions.
+
+SETUP OVERVIEW
+
+1) Create a Cloudflare Pages project for this folder/repository.
+   For Functions, use Wrangler/Git deployment rather than only opening index.html locally.
+
+2) Create D1:
+   npx wrangler d1 create the-frame-station
+   Copy the database_id into wrangler.toml.
+
+3) Initialize D1:
+   npx wrangler d1 execute the-frame-station --remote --file=schema.sql
+   npx wrangler d1 execute the-frame-station --remote --file=seed.sql
+
+4) Optional but recommended for owner image uploads:
+   npx wrangler r2 bucket create the-frame-station-images
+   Keep the R2 binding name as IMAGES.
+
+5) Generate password values:
+   Open make-owner-password.html locally in your browser.
+   Type the owner password.
+   Copy OWNER_PASSWORD_SALT and OWNER_PASSWORD_HASH.
+
+6) In Cloudflare Pages project → Settings → Variables and Secrets, add:
+   OWNER_EMAIL = your owner email
+   OWNER_PASSWORD_SALT = value generated above
+   OWNER_PASSWORD_HASH = value generated above
+   SESSION_SECRET = a long random secret (at least 32 random characters)
+
+7) Deploy.
+   Owner login:
+   https://YOUR-DOMAIN/admin/
+
+SECURITY
+- Password is NOT stored in the website JavaScript.
+- Password checking happens server-side in Cloudflare Pages Functions.
+- Session uses an HttpOnly, Secure, SameSite=Strict cookie.
+- Admin API checks the authenticated session before writes.
+
+NOTE
+If R2 is not configured, existing product images and manual image URLs still work.
