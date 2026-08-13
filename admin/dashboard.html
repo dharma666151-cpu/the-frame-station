@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Owner Dashboard | The Frame Station</title>
+<link rel="stylesheet" href="/styles.css">
+<style>
+body{background:#f7f1e6}.admin-head{background:#1a1a1a;color:#fff;padding:15px 0}
+.admin-head .container{display:flex;align-items:center;justify-content:space-between}.admin-head img{width:190px;filter:brightness(0) invert(1)}
+.admin-main{padding:35px 0 70px}.admin-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:24px}
+.panel{background:#fff;border-radius:20px;padding:22px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+.panel h2{font-size:1.8rem;margin-bottom:14px}.field{margin:12px 0}.field label{display:block;font-weight:800;font-size:.86rem;margin-bottom:5px}
+.field input,.field textarea,.field select{width:100%;padding:11px;border:1px solid #d9cdbd;border-radius:10px}
+.field textarea{min-height:85px}.product-row{border:1px solid #eadfce;border-radius:14px;padding:12px;margin:10px 0;display:grid;grid-template-columns:72px 1fr auto;gap:12px;align-items:center}
+.product-row img{width:72px;height:72px;object-fit:contain;background:#faf5ed;border-radius:10px}.product-row h3{font-family:inherit;font-size:1rem;margin:0 0 4px}
+.product-row small{color:#6d675f}.row-actions{display:flex;gap:6px}.mini{padding:8px 10px;border-radius:9px;border:0;cursor:pointer;font-weight:700}
+.edit{background:#087f7f;color:#fff}.del{background:#fff0ed;color:#b42318}.top-actions{display:flex;gap:10px}
+.notice{padding:10px;border-radius:10px;background:#e7f8f1;color:#08734f;margin:10px 0;display:none}
+@media(max-width:850px){.admin-grid{grid-template-columns:1fr}.product-row{grid-template-columns:58px 1fr}.row-actions{grid-column:1/-1}.admin-head img{width:150px}}
+</style></head>
+<body>
+<header class="admin-head"><div class="container"><img src="/assets/logo.png" alt="The Frame Station"><div class="top-actions"><a class="btn btn-ghost" style="color:#fff;border-color:#fff" href="/" target="_blank">View Site</a><button class="btn btn-primary" id="logout">Logout</button></div></div></header>
+<main class="admin-main"><div class="container">
+<div class="notice" id="notice"></div>
+<div class="admin-grid">
+<section class="panel">
+<h2>Website Settings</h2>
+<form id="settingsForm">
+<div class="field"><label>Hero Title</label><input id="hero_title"></div>
+<div class="field"><label>Hero Description</label><textarea id="hero_text"></textarea></div>
+<div class="field"><label>WhatsApp Number</label><input id="whatsapp" placeholder="9715XXXXXXXX"><small>Use country code, no + or spaces.</small></div>
+<div class="field"><label>Delivery Text</label><input id="delivery_text"></div>
+<div class="field"><label>Contact Text</label><input id="contact_text"></div>
+<button class="btn btn-primary" type="submit">Save Website Settings</button>
+</form>
+<hr style="margin:24px 0;border:0;border-top:1px solid #eadfce">
+<h2 id="productFormTitle">Add Product</h2>
+<form id="productForm">
+<input id="pid" type="hidden">
+<div class="field"><label>Name</label><input id="pname" required></div>
+<div class="field"><label>Category</label><input id="pcategory" placeholder="Wall Art"></div>
+<div class="field"><label>Price</label><input id="pprice" placeholder="AED 199"></div>
+<div class="field"><label>Product Image</label><input id="pimage" placeholder="assets/products/product-01.webp"></div>
+<div class="field"><label>Or upload new image (R2)</label><input id="pfile" type="file" accept="image/*"></div>
+<div class="field"><label>Sort Order</label><input id="psort" type="number" value="100"></div>
+<div class="field"><label><input id="pfeatured" type="checkbox" style="width:auto"> Featured / Best Seller</label></div>
+<div class="field"><label><input id="pactive" type="checkbox" style="width:auto" checked> Active / Visible</label></div>
+<button class="btn btn-primary" type="submit">Save Product</button>
+<button class="btn btn-ghost" type="button" id="cancelEdit">Clear</button>
+</form>
+</section>
+<section class="panel">
+<h2>Products</h2>
+<p>Edit products here. Saved changes appear on the public website after refresh.</p>
+<div id="products"></div>
+</section>
+</div></div></main>
+<script>
+let state={products:[],settings:{}};
+const notice=document.getElementById('notice');
+function flash(t){notice.textContent=t;notice.style.display='block';setTimeout(()=>notice.style.display='none',2500)}
+async function api(url,opts={}){const r=await fetch(url,opts);if(r.status===401){location.href='/admin/';throw new Error('Unauthorized')}const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Request failed');return j}
+async function load(){
+ state=await api('/api/admin/data');
+ for(const k of ['hero_title','hero_text','whatsapp','delivery_text','contact_text']) document.getElementById(k).value=state.settings[k]||'';
+ render();
+}
+function render(){
+ products.innerHTML='';
+ for(const p of state.products){
+   const el=document.createElement('div');el.className='product-row';
+   el.innerHTML=`<img src="${p.image||'/assets/logo.png'}"><div><h3>${esc(p.name)}</h3><small>${esc(p.category||'')} ${p.price?'• '+esc(p.price):''} ${p.active?'':'• HIDDEN'}</small></div><div class="row-actions"><button class="mini edit">Edit</button><button class="mini del">Delete</button></div>`;
+   el.querySelector('.edit').onclick=()=>editProduct(p);
+   el.querySelector('.del').onclick=()=>deleteProduct(p.id);
+   products.appendChild(el);
+ }
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function editProduct(p){
+ pid.value=p.id;pname.value=p.name||'';pcategory.value=p.category||'';pprice.value=p.price||'';pimage.value=p.image||'';psort.value=p.sort_order??100;pfeatured.checked=!!p.featured;pactive.checked=!!p.active;
+ productFormTitle.textContent='Edit Product';scrollTo({top:500,behavior:'smooth'});
+}
+function clearProduct(){productForm.reset();pid.value='';psort.value=100;pactive.checked=true;productFormTitle.textContent='Add Product'}
+cancelEdit.onclick=clearProduct;
+settingsForm.onsubmit=async e=>{e.preventDefault();const body={};for(const k of ['hero_title','hero_text','whatsapp','delivery_text','contact_text'])body[k]=document.getElementById(k).value;await api('/api/admin/settings',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});flash('Website settings saved.');await load()}
+productForm.onsubmit=async e=>{
+ e.preventDefault();
+ let image=pimage.value.trim();
+ const file=pfile.files[0];
+ if(file){const fd=new FormData();fd.append('file',file);const up=await api('/api/admin/upload',{method:'POST',body:fd});image=up.url}
+ const body={id:Number(pid.value||0),name:pname.value,category:pcategory.value,price:pprice.value,image,sort_order:Number(psort.value||100),featured:pfeatured.checked,active:pactive.checked};
+ await api('/api/admin/product',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});flash('Product saved.');clearProduct();await load()
+};
+async function deleteProduct(id){if(!confirm('Delete this product?'))return;await api('/api/admin/product?id='+id,{method:'DELETE'});flash('Product deleted.');await load()}
+logout.onclick=async()=>{await fetch('/api/logout',{method:'POST'});location.href='/admin/'}
+load().catch(e=>{console.error(e)});
+</script></body></html>
