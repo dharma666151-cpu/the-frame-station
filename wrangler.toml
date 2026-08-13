@@ -6,7 +6,7 @@ pages_build_output_dir = "."
 [[d1_databases]]
 binding = "DB"
 database_name = "the-frame-station"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "08edcb36-6195-48dd-80b7-dda264fa0b30"
 
 [[r2_buckets]]
 binding = "IMAGES"
