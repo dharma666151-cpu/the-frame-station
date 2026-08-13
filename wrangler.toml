@@ -8,6 +8,3 @@ binding = "DB"
 database_name = "the-frame-station"
 database_id = "08edcb36-6195-48dd-80b7-dda264fa0b30"
 
-[[r2_buckets]]
-binding = "IMAGES"
-bucket_name = "the-frame-station-images"
