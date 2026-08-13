@@ -80,7 +80,7 @@ export async function requireAdmin(context) {
   return session;
 }
 
-export async function pbkdf2Hash(password, salt, iterations = 160000) {
+export async function pbkdf2Hash(password, salt, iterations = 100000) {
   const key = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveBits"]);
   const bits = await crypto.subtle.deriveBits(
     { name: "PBKDF2", hash: "SHA-256", salt: enc.encode(salt), iterations },
