@@ -2,7 +2,7 @@
 // The Frame Station — static Cloudflare Pages site.
 // To make the WhatsApp buttons open your business directly, add the full
 // international number below without + or spaces, e.g. 9715XXXXXXXX.
-const WHATSAPP_NUMBER = "";
+const WHATSAPP_NUMBER = "919205871232";
 
 const menuToggle = document.querySelector(".menu-toggle");
 const nav = document.querySelector(".nav");
@@ -35,6 +35,14 @@ const contactWhatsApp = document.getElementById("contactWhatsApp");
 contactWhatsApp.addEventListener("click", () => {
   openWhatsApp("Hi The Frame Station, I would like help choosing a frame.");
 });
+
+
+const locationWhatsApp = document.getElementById("locationWhatsApp");
+if (locationWhatsApp) {
+  locationWhatsApp.addEventListener("click", () => {
+    openWhatsApp("Hi The Frame Station, I would like directions and information about your shop in Kaimganj.");
+  });
+}
 
 const photoUpload = document.getElementById("photoUpload");
 const previewImage = document.getElementById("previewImage");
@@ -117,6 +125,21 @@ if (floatingWhatsApp) {
 
     if(s.whatsapp){
       window.TFS_WHATSAPP = s.whatsapp.replace(/\D/g,'');
+      const phoneLink=document.getElementById('locationPhone');
+      if(phoneLink){ phoneLink.href='https://wa.me/'+window.TFS_WHATSAPP; phoneLink.textContent='+'+window.TFS_WHATSAPP; }
+    }
+    if(s.location_address){
+      const addr=document.getElementById('locationAddress');
+      if(addr) addr.textContent=s.location_address;
+      const q=encodeURIComponent(s.location_address);
+      const dir=document.getElementById('directionsLink');
+      const map=document.getElementById('locationMap');
+      if(dir) dir.href='https://www.google.com/maps/search/?api=1&query='+q;
+      if(map) map.src='https://www.google.com/maps?q='+q+'&output=embed';
+    }
+    if(s.maps_url){
+      const dir=document.getElementById('directionsLink');
+      if(dir) dir.href=s.maps_url;
     }
 
     const dbProducts = Array.isArray(data.products) ? data.products : [];

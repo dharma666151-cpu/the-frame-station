@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS products (
 INSERT OR IGNORE INTO settings(key,value) VALUES
 ('hero_title','Turn Your Memories Into Art.'),
 ('hero_text','Beautiful frames, wall art and personalized pieces designed for every memory and every wall.'),
-('whatsapp',''),
+('whatsapp','919205871232'),
 ('delivery_text','Fast & reliable delivery'),
-('contact_text','Tell us what you want to frame.');
+('contact_text','Tell us what you want to frame.'),
+('location_address','Sultan Market, opposite Shakuntala School, Kampil Road, Kaimganj, Farrukhabad, Uttar Pradesh 209502, India'),
+('maps_url','https://www.google.com/maps/search/?api=1&query=Sultan%20Market%2C%20opposite%20Shakuntala%20School%2C%20Kampil%20Road%2C%20Kaimganj%2C%20Farrukhabad%2C%20Uttar%20Pradesh%20209502%2C%20India');

@@ -31,6 +31,8 @@ body{background:#f7f1e6}.admin-head{background:#1a1a1a;color:#fff;padding:15px 0
 <div class="field"><label>WhatsApp Number</label><input id="whatsapp" placeholder="9715XXXXXXXX"><small>Use country code, no + or spaces.</small></div>
 <div class="field"><label>Delivery Text</label><input id="delivery_text"></div>
 <div class="field"><label>Contact Text</label><input id="contact_text"></div>
+<div class="field"><label>Shop Location</label><textarea id="location_address" placeholder="Full shop address"></textarea></div>
+<div class="field"><label>Google Maps Link (optional)</label><input id="maps_url" placeholder="https://maps.google.com/..."></div>
 <button class="btn btn-primary" type="submit">Save Website Settings</button>
 </form>
 <hr style="margin:24px 0;border:0;border-top:1px solid #eadfce">
@@ -41,7 +43,7 @@ body{background:#f7f1e6}.admin-head{background:#1a1a1a;color:#fff;padding:15px 0
 <div class="field"><label>Category</label><input id="pcategory" placeholder="Wall Art"></div>
 <div class="field"><label>Price</label><input id="pprice" placeholder="AED 199"></div>
 <div class="field"><label>Product Image</label><input id="pimage" placeholder="assets/products/product-01.webp"></div>
-<div class="field"><label>Or upload new image (R2)</label><input id="pfile" type="file" accept="image/*"></div>
+
 <div class="field"><label>Sort Order</label><input id="psort" type="number" value="100"></div>
 <div class="field"><label><input id="pfeatured" type="checkbox" style="width:auto"> Featured / Best Seller</label></div>
 <div class="field"><label><input id="pactive" type="checkbox" style="width:auto" checked> Active / Visible</label></div>
@@ -62,7 +64,7 @@ function flash(t){notice.textContent=t;notice.style.display='block';setTimeout((
 async function api(url,opts={}){const r=await fetch(url,opts);if(r.status===401){location.href='/admin/';throw new Error('Unauthorized')}const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Request failed');return j}
 async function load(){
  state=await api('/api/admin/data');
- for(const k of ['hero_title','hero_text','whatsapp','delivery_text','contact_text']) document.getElementById(k).value=state.settings[k]||'';
+ for(const k of ['hero_title','hero_text','whatsapp','delivery_text','contact_text','location_address','maps_url']) document.getElementById(k).value=state.settings[k]||'';
  render();
 }
 function render(){
@@ -82,12 +84,10 @@ function editProduct(p){
 }
 function clearProduct(){productForm.reset();pid.value='';psort.value=100;pactive.checked=true;productFormTitle.textContent='Add Product'}
 cancelEdit.onclick=clearProduct;
-settingsForm.onsubmit=async e=>{e.preventDefault();const body={};for(const k of ['hero_title','hero_text','whatsapp','delivery_text','contact_text'])body[k]=document.getElementById(k).value;await api('/api/admin/settings',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});flash('Website settings saved.');await load()}
+settingsForm.onsubmit=async e=>{e.preventDefault();const body={};for(const k of ['hero_title','hero_text','whatsapp','delivery_text','contact_text','location_address','maps_url'])body[k]=document.getElementById(k).value;await api('/api/admin/settings',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});flash('Website settings saved.');await load()}
 productForm.onsubmit=async e=>{
  e.preventDefault();
  let image=pimage.value.trim();
- const file=pfile.files[0];
- if(file){const fd=new FormData();fd.append('file',file);const up=await api('/api/admin/upload',{method:'POST',body:fd});image=up.url}
  const body={id:Number(pid.value||0),name:pname.value,category:pcategory.value,price:pprice.value,image,sort_order:Number(psort.value||100),featured:pfeatured.checked,active:pactive.checked};
  await api('/api/admin/product',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});flash('Product saved.');clearProduct();await load()
 };

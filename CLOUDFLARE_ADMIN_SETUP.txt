@@ -8,7 +8,6 @@ This version adds:
 - Homepage hero text
 - WhatsApp number
 - D1 database
-- Optional R2 image uploads
 
 IMPORTANT:
 This is no longer a purely static drag-and-drop website. The admin system uses Cloudflare Pages Functions.
@@ -27,22 +26,18 @@ SETUP OVERVIEW
    npx wrangler d1 execute the-frame-station --remote --file=schema.sql
    npx wrangler d1 execute the-frame-station --remote --file=seed.sql
 
-4) Optional but recommended for owner image uploads:
-   npx wrangler r2 bucket create the-frame-station-images
-   Keep the R2 binding name as IMAGES.
-
-5) Generate password values:
+4) Generate password values:
    Open make-owner-password.html locally in your browser.
    Type the owner password.
    Copy OWNER_PASSWORD_SALT and OWNER_PASSWORD_HASH.
 
-6) In Cloudflare Pages project → Settings → Variables and Secrets, add:
+5) In Cloudflare Pages project → Settings → Variables and Secrets, add:
    OWNER_EMAIL = your owner email
    OWNER_PASSWORD_SALT = value generated above
    OWNER_PASSWORD_HASH = value generated above
    SESSION_SECRET = a long random secret (at least 32 random characters)
 
-7) Deploy.
+6) Deploy.
    Owner login:
    https://YOUR-DOMAIN/admin/
 
@@ -52,5 +47,5 @@ SECURITY
 - Session uses an HttpOnly, Secure, SameSite=Strict cookie.
 - Admin API checks the authenticated session before writes.
 
-NOTE
-If R2 is not configured, existing product images and manual image URLs still work.
+IMAGE UPDATES
+Product images use normal website asset paths such as assets/products/product-01.webp. Update images through the GitHub/ZIP deployment workflow; R2 is not required.

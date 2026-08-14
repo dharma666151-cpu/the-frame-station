@@ -22,3 +22,11 @@ The website is responsive for mobile and laptop.
 
 
 UPDATE: Product/category card alignment was fixed and a floating WhatsApp Order Now button was added.
+
+
+LOCAL BUSINESS / SEO DEFAULTS
+- WhatsApp: +91 92058 71232 (919205871232 for wa.me)
+- Location: Sultan Market, opposite Shakuntala School, Kampil Road, Kaimganj, Farrukhabad, Uttar Pradesh 209502, India
+- Added LocalBusiness/Store structured data, canonical/Open Graph metadata, robots.txt and sitemap.xml.
+- Added public Location + Google Maps section and admin-editable location fields.
+- If you connect a custom domain later, update canonical/og:url/sitemap URLs from pages.dev to the custom domain.

@@ -6,7 +6,7 @@ export async function onRequestPost(context) {
   if (!context.env.DB) return json({ error: "D1 binding DB is missing." }, 503);
   let body;
   try { body = await context.request.json(); } catch { return json({ error: "Invalid JSON." }, 400); }
-  const allowed = ["site_title","tagline","hero_title","hero_text","whatsapp","delivery_text","contact_text"];
+  const allowed = ["site_title","tagline","hero_title","hero_text","whatsapp","delivery_text","contact_text","location_address","maps_url"];
   const statements = [];
   for (const key of allowed) {
     if (key in body) {
